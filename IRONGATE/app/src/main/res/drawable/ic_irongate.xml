@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Outer shield shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,8 L62,20 L74,15 L70,28 L82,35 L70,42 L74,55 L62,50 L50,62 L38,50 L26,55 L30,42 L18,35 L30,28 L26,15 L38,20 Z"/>
+
+    <!-- Neck/body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,62 L62,62 L62,68 L38,68 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,68 L66,68 L66,73 L34,73 Z"/>
+
+    <!-- Legs -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,73 L46,73 L46,85 L38,85 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,73 L62,73 L62,85 L54,85 Z"/>
+
+    <!-- Feet -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,82 L46,82 L46,87 L30,87 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,82 L70,82 L70,87 L54,87 Z"/>
+
+    <!-- Inner face cutout (black) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M50,18 L58,26 L68,22 L65,32 L75,38 L65,44 L68,54 L58,50 L50,58 L42,50 L32,54 L35,44 L25,38 L35,32 L32,22 L42,26 Z"/>
+
+    <!-- Face detail (white fill) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.12"
+        android:pathData="M50,22 L57,29 L65,25 L63,34 L72,38 L63,43 L65,52 L57,48 L50,55 L43,48 L35,52 L37,43 L28,38 L37,34 L35,25 L43,29 Z"/>
+
+    <!-- Eye -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,30 A8,8 0 1,1 50,46 A8,8 0 1,1 50,30 Z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M50,33 A5,5 0 1,1 50,43 A5,5 0 1,1 50,33 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,35.5 A2.5,2.5 0 1,1 50,40.5 A2.5,2.5 0 1,1 50,35.5 Z"/>
+
+</vector>

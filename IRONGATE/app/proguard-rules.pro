@@ -1,0 +1,6 @@
+-keep class com.irongate.model.** { *; }
+-keep class com.irongate.bridge.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn okhttp3.**
+-keep class com.google.gson.** { *; }

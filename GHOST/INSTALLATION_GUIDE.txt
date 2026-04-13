@@ -1,0 +1,290 @@
+================================================================
+GHOST — COMPLETE INSTALLATION & SETUP GUIDE
+VERSION: 1.0.0
+DEVICE: Redmi Note 8 Pro (Android 10+)
+================================================================
+
+================================================================
+PART 1 — PREREQUISITES
+================================================================
+
+Before installing GHOST, ensure:
+
+1. Android version: 8.0 or above (Redmi Note 8 Pro = Android 10 ✓)
+2. Free storage: Minimum 4GB free
+   - Vosk model: ~50MB
+   - Gemma 3 1B model: ~1.5GB
+   - App + data: ~500MB
+3. RAM: 6GB (Redmi Note 8 Pro ✓)
+4. Unknown sources enabled:
+   Settings → Privacy → Install unknown apps → Allow
+
+================================================================
+PART 2 — MODEL FILES (REQUIRED BEFORE FIRST LAUNCH)
+================================================================
+
+GHOST needs two AI model files placed inside the app:
+
+A) VOSK MODEL (Speech Recognition):
+   Download: https://alphacephei.com/vosk/models
+   Model: vosk-model-small-en-us-0.15
+   Place in: Android/data/com.ghost/files/vosk-model-small-en/
+
+B) GEMMA 3 1B MODEL (AI Brain):
+   Download from: https://www.kaggle.com/models/google/gemma-3
+   File: gemma-3-1b-it-cpu-int4.bin
+   Place in: Android/data/com.ghost/files/
+
+You can copy these via USB from your PC using Android File Transfer.
+
+================================================================
+PART 3 — INSTALL ORDER
+================================================================
+
+STEP 1: Install Bridge.apk
+   - Tap Bridge.apk → Install
+   - Launch Bridge
+   - Confirm notification: "Bridge: Standby — Waiting for connections"
+
+STEP 2: Install GHOST.apk
+   - Tap GHOST.apk → Install
+   - Launch GHOST
+   - Grant ALL permissions when prompted (see Part 4)
+   - Confirm Bridge notification updates:
+     "Bridge: Active — GHOST connected"
+
+STEP 3: Install GIPSY.apk (when ready)
+   - Tap GIPSY.apk → Install
+   - Launch GIPSY
+   - Confirm Bridge notification:
+     "Bridge: Active — GHOST connected — GIPSY connected"
+
+STEP 4: Run IRONGATE
+   - Say "GHOST, Commence IRONGATE Protocol"
+   - Wait for notification: "IRONGATE COMPLETE — ALL CLEAR"
+   - Ecosystem is live ✓
+
+================================================================
+PART 4 — PERMISSIONS (GRANT ALL)
+================================================================
+
+When GHOST first launches, grant these permissions:
+
+REQUIRED — deny any of these and GHOST breaks:
+□ Microphone — wake word + STT
+□ Camera — face recognition + Recon protocol
+□ Location (precise) — GPS for Doomsday, SOS Lite, Phantom
+□ Background location — Phantom protocol
+□ Contacts — calling + messaging by name
+□ Phone — make/answer calls
+□ Send SMS — SMS module
+□ Read SMS — message reading
+□ Storage — file operations
+□ Notifications — read + post notifications
+□ Calendar — schedule reading
+
+SPECIAL PERMISSIONS (grant manually):
+
+1. Draw over other apps (Overlay):
+   Settings → Apps → GHOST → Display over other apps → Allow
+   Required for: skull logo overlay, HUD, Focus timer, Silent mode
+
+2. Accessibility Service:
+   Settings → Accessibility → Installed services → GHOST → Enable
+   Required for: WhatsApp automation, app control, Focus overlay
+
+3. Device Admin:
+   Settings → Security → Device admin apps → GHOST → Activate
+   Required for: screen lock, Fortress protocol
+
+4. Notification Access:
+   Settings → Apps → Special app access → Notification access → GHOST → Allow
+   Required for: reading and replying to notifications
+
+5. Do Not Disturb Access:
+   Settings → Apps → Special app access → Do Not Disturb → GHOST → Allow
+   Required for: Focus, Ghost, Night protocols
+
+6. Modify System Settings:
+   Settings → Apps → Special app access → Modify system settings → GHOST → Allow
+   Required for: brightness control
+
+================================================================
+PART 5 — FIRST LAUNCH SETUP
+================================================================
+
+On first launch, GHOST runs initialization:
+
+1. OWNER REGISTRATION
+   GHOST says: "GHOST online. Beginning owner registration, Sir."
+   
+   a) Face scan — look directly at front camera for 5 seconds
+   b) Voice registration — say "GHOST online and ready" three times
+   c) Set owner passcode — enter 6+ digit numeric code
+   d) Set voice phrase — speak your secret authentication phrase
+   e) Set security question and answer
+   
+   GHOST confirms: "Owner registered. Identity locked, Sir."
+
+2. EMERGENCY CONTACTS
+   Set in CONFIG tab:
+   - Doomsday/Panic emergency contact (WhatsApp number with country code)
+   - SOS Lite contact (can be same or different)
+   - Doomsday custom message (pre-written distress message)
+
+3. FACTORY RESET CODE
+   Nuclear code is hardcoded: WARHAWK
+   Cannot be changed.
+
+4. PANIC WORD
+   Set in CONFIG tab → Panic Word field
+   Single word. Different from wake word "GHOST".
+   Known only to you.
+
+5. MORNING ALARM
+   Set in CONFIG tab:
+   - Morning window: default 05:00–09:00
+   - Morning alarm time: default 07:00
+   - Morning playlist name: match exactly to your Spotify playlist name
+
+6. DRIVE PLAYLIST
+   Set in CONFIG tab → Drive Playlist
+   Must match your Spotify playlist name exactly.
+
+================================================================
+PART 6 — BRIDGE CONNECTION DETAILS
+================================================================
+
+Connection type: Local TCP socket
+Protocol: JSON over TCP
+No internet required — all local
+
+GHOST → Bridge: localhost:8765
+GIPSY → Bridge: localhost:8766
+Message format: UTF-8 JSON
+Heartbeat: every 10 seconds
+Timeout: 30 seconds = offline
+Buffer: up to 100 messages when offline
+Reconnect: automatic, exponential backoff (1s → 2s → 4s → max 30s)
+
+Bridge notification states:
+"Bridge: Active — GHOST connected — GIPSY connected" = ALL GOOD
+"Bridge: Active — GHOST offline — GIPSY connected" = GHOST DOWN
+"Bridge: Active — GHOST connected — GIPSY offline" = GIPSY DOWN
+"Bridge: Standby — Waiting for connections" = BRIDGE UP, BOTH DOWN
+
+================================================================
+PART 7 — FLOATING SCREEN TYPES
+================================================================
+
+GHOST has 4 floating elements (all require Draw Over Apps permission):
+
+1. SKULL LOGO OVERLAY (top left corner)
+   Appears: when wake word "GHOST" is heard
+   States:
+   - Single pulse = wake word detected
+   - Slow breathing = listening for command
+   - Fast pulse = processing command
+   - Solid = responding
+   - Fade out (3 seconds after response) = back to idle
+   5-second timeout: if you say nothing after wake word,
+   GHOST says "Standing by, Sir." and logo fades
+
+2. HUD OVERLAY (bottom of screen)
+   Shows: GHOST status + active protocol
+   Always visible when any protocol is running
+
+3. FOCUS TIMER (top right corner)
+   Shows: countdown timer during Focus Protocol
+   Above all apps — always visible
+
+4. SILENT MODE WINDOW (bottom overlay)
+   Shows: GHOST text responses when Silent Mode is active
+   Replaces voice output completely
+
+================================================================
+PART 8 — WAKE WORD AND COMMANDS
+================================================================
+
+Wake word: GHOST (or your custom callsign from CALLSIGN tab)
+
+After wake word — you have 5 seconds to speak.
+If you say nothing — GHOST says "Standing by, Sir." and returns to idle.
+
+PROTOCOL TRIGGERS (all recognised):
+"Commence {name} Protocol"
+"Commence {name}"
+"{name} Protocol"
+"{name}" — for critical ones like Doomsday
+
+DEACTIVATION:
+"Stand down {name}"
+"Abort {name}"
+"Cancel {name}"
+
+ALSO WORKS via chat — type any command in the chat input.
+
+================================================================
+PART 9 — IRONGATE PROTOCOL (ECOSYSTEM HEALTH)
+================================================================
+
+Runs: Every 1 hour automatically (silent if ALL CLEAR)
+Manual trigger: "GHOST, Commence IRONGATE Protocol"
+
+Result notifications:
+"IRONGATE COMPLETE — ALL CLEAR" → silent, no interruption
+"IRONGATE COMPLETE — SOMETHING'S DOWN" → notification + GHOST alerts
+"IRONGATE COMPLETE — BLACKOUT" → notification + GHOST independent alert
+
+To check manually anytime — just say "IRONGATE"
+
+================================================================
+PART 10 — FACTORY RESET PROCEDURE
+================================================================
+
+WARNING: This cannot be undone.
+
+Step 1: CONFIG tab → FACTORY RESET button
+Step 2: GHOST speaks warning (exact words, always):
+        "WARNING, THIS IS NOT A DRILL. ALL DATA WILL BE NUKED.
+         I REPEAT, ALL DATA WILL BE NUKED, NOT A DRILL.
+         CONFIRMATION REQUESTED, SIR?"
+Step 3: Select target — GHOST / GIPSY / BOTH
+Step 4: First confirmation — tap CONFIRM
+Step 5: Second confirmation — tap CONFIRM AGAIN
+Step 6: Enter nuclear code — type WARHAWK → tap OK
+Step 7: WARHAWK audio plays completely before anything is deleted
+Step 8: Wipe executes
+Step 9: GHOST reboots — "GHOST online. Ready for initialization, Sir."
+
+Wrong code at Step 6 → "Incorrect code. Reset aborted, Sir." → back to idle.
+
+================================================================
+PART 11 — GITHUB / OPEN SOURCE
+================================================================
+
+GHOST is your project. You own it entirely.
+You designed every feature, every protocol, every detail.
+
+To publish on GitHub:
+1. Create repo: github.com/yourusername/GHOST
+2. Add README.md describing the project
+3. Add .gitignore for Android (ignore /build, /.gradle, local.properties)
+4. Do NOT commit model files (Vosk + Gemma) — too large for GitHub
+   Add to .gitignore: *.bin, vosk-model-*/
+5. Users who clone must download models themselves
+6. Add LICENSE file (MIT or your choice)
+7. Push all source code
+
+Suggested .gitignore additions:
+*.bin
+*.tflite
+vosk-model-*/
+local.properties
+/build
+/.gradle
+/app/build
+
+================================================================
+END OF INSTALLATION GUIDE
+================================================================

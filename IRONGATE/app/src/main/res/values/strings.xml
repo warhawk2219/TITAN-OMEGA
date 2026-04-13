@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IRONGATE</string>
+    <string name="bridge_notif_title">IRONGATE: Active</string>
+    <string name="bridge_notif_text">Bridge running — awaiting connections</string>
+</resources>
