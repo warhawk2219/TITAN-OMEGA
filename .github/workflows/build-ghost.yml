@@ -3,93 +3,108 @@ name: Build GHOST APK
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'GHOST/**'
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
+ 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
  
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+ 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
  
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.0
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
  
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y wget unzip
+          # Download command line tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdtools.zip
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          unzip -q /tmp/cmdtools.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
  
-      - name: Grant execute permission for gradlew
-        run: chmod +x GHOST/gradlew
-        
-      - name: Create font directory and placeholder fonts
+      - name: Accept Android licenses and install SDK components
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+ 
+      - name: Install Gradle wrapper
+        run: |
+          cd GHOST
+          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip -O /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp/
+          /tmp/gradle-8.4/bin/gradle wrapper --gradle-version=8.4 --distribution-type=bin
+          chmod +x gradlew
+ 
+      - name: Create font placeholders
         run: |
           mkdir -p GHOST/app/src/main/res/font
-          # Download Minecraft font
-          curl -L "https://github.com/IdreesInc/Monocraft/releases/download/v3.0/Monocraft.ttf" -o GHOST/app/src/main/res/font/minecraft_regular.ttf || \
-          cp GHOST/app/src/main/res/font/minecraft_regular.ttf GHOST/app/src/main/res/font/minecraft_regular.ttf 2>/dev/null || \
-          touch GHOST/app/src/main/res/font/minecraft_regular.ttf
-          cp GHOST/app/src/main/res/font/minecraft_regular.ttf GHOST/app/src/main/res/font/minecraft_bold.ttf
+          # Try to download Monocraft font (Minecraft-style, open source)
+          wget -q "https://github.com/IdreesInc/Monocraft/releases/download/v3.0/Monocraft.ttf" \
+            -O GHOST/app/src/main/res/font/minecraft_regular.ttf 2>/dev/null || \
+            printf '\x00\x01\x00\x00' > GHOST/app/src/main/res/font/minecraft_regular.ttf
+          cp GHOST/app/src/main/res/font/minecraft_regular.ttf \
+             GHOST/app/src/main/res/font/minecraft_bold.ttf
  
-      - name: Create placeholder model files for build
+      - name: Create asset placeholders
         run: |
           mkdir -p GHOST/app/src/main/assets
-          # Create tiny placeholder files so the build doesn't fail
-          # Real model files must be added manually to the device
-          echo "PLACEHOLDER - Replace with real vosk-model-small-en folder" > GHOST/app/src/main/assets/vosk-model-placeholder.txt
-          echo "PLACEHOLDER - Replace with real gemma-3-1b-it-cpu-int4.bin" > GHOST/app/src/main/assets/gemma-placeholder.txt
+          echo "Placeholder - add real vosk model" > GHOST/app/src/main/assets/vosk-placeholder.txt
+          echo "Placeholder - add real gemma model" > GHOST/app/src/main/assets/gemma-placeholder.txt
  
       - name: Build Debug APK
         run: |
           cd GHOST
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace
         env:
-          GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false"
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
  
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
-          name: GHOST-debug-APK
+          name: GHOST-APK
           path: GHOST/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
  
       - name: Create Release
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.1
         with:
-          tag_name: ghost-build-${{ github.run_number }}
-          name: GHOST Build ${{ github.run_number }}
+          tag_name: ghost-v${{ github.run_number }}
+          name: "GHOST v${{ github.run_number }}"
           body: |
-            ## GHOST APK — Build ${{ github.run_number }}
-            
-            ### Download and install:
-            1. Download GHOST-debug.apk below
+            ## GHOST APK — Ready to install
+ 
+            1. Download **app-debug.apk** below
             2. Transfer to your Redmi Note 8 Pro
-            3. Enable "Install unknown apps" in Settings
-            4. Tap the APK to install
-            
-            ### IMPORTANT — Model files required:
-            This APK does NOT include the AI model files.
-            You must manually copy these to your phone after installing:
-            
-            **Vosk model** (speech recognition):
-            Download: https://alphacephei.com/vosk/models
-            File: vosk-model-small-en-us-0.15
-            Place at: Android/data/com.ghost/files/vosk-model-small-en/
-            
-            **Gemma 3 1B model** (AI brain):
-            Download from Kaggle or HuggingFace
-            File: gemma-3-1b-it-cpu-int4.bin
-            Place at: Android/data/com.ghost/files/
-            
+            3. Settings → Privacy → Install unknown apps → Allow
+            4. Tap APK to install
+            5. Grant all permissions on first launch
+ 
+            ### Model files required after install:
+            Copy these to `Android/data/com.ghost/files/` on your phone:
+ 
+            **Vosk STT model:**
+            https://alphacephei.com/vosk/models
+            Download: vosk-model-small-en-us-0.15 → rename to vosk-model-small-en
+ 
+            **Gemma 3 1B model:**
+            https://huggingface.co/google/gemma-3-1b-it
+            Download: gemma-3-1b-it-cpu-int4.bin
           files: GHOST/app/build/outputs/apk/debug/app-debug.apk
           draft: false
           prerelease: false
